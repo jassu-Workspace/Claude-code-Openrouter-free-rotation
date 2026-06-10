@@ -1,0 +1,10 @@
+[console_scripts]
+fcc-claude = cli.entrypoints:launch_claude
+fcc-doctor = cli.commands:fcc_doctor
+fcc-init = cli.entrypoints:init
+fcc-install = cli.commands:fcc_install
+fcc-server = cli.entrypoints:serve
+fcc-start = cli.commands:fcc_start
+fcc-status = cli.commands:fcc_status
+fcc-update = cli.commands:fcc_update
+free-claude-code = cli.entrypoints:serve

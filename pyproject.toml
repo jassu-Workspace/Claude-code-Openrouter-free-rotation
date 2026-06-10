@@ -23,6 +23,7 @@ dependencies = [
     "loguru>=0.7.0",
     "aiohttp>=3.14.0",
     "jsonschema>=4.25.0",
+    "psutil>=5.9.0",
 ]
 
 [project.scripts]
@@ -30,6 +31,11 @@ fcc-server = "cli.entrypoints:serve"
 free-claude-code = "cli.entrypoints:serve"
 fcc-init = "cli.entrypoints:init"
 fcc-claude = "cli.entrypoints:launch_claude"
+fcc-install = "cli.commands:fcc_install"
+fcc-start = "cli.commands:fcc_start"
+fcc-status = "cli.commands:fcc_status"
+fcc-doctor = "cli.commands:fcc_doctor"
+fcc-update = "cli.commands:fcc_update"
 
 [project.optional-dependencies]
 voice = [
