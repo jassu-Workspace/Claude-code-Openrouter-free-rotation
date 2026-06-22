@@ -312,6 +312,16 @@ install_free_claude_code() {
     fi
 }
 
+verify_sqlite() {
+    if python3 -c "import sqlite3; print(sqlite3.sqlite_version)" >/dev/null 2>&1; then
+        printf 'SQLite available: %s\n' "$(python3 -c 'import sqlite3; print(sqlite3.sqlite_version)')"
+    elif python -c "import sqlite3; print(sqlite3.sqlite_version)" >/dev/null 2>&1; then
+        printf 'SQLite available: %s\n' "$(python -c 'import sqlite3; print(sqlite3.sqlite_version)')"
+    else
+        printf 'WARNING: sqlite3 module not found. Token tracking will not work.\n'
+    fi
+}
+
 parse_args "$@"
 validate_args
 
@@ -323,6 +333,9 @@ install_or_update_uv
 
 step "Installing Python $PYTHON_VERSION"
 run uv python install "$PYTHON_VERSION"
+
+step "Verifying SQLite support"
+verify_sqlite
 
 step "Installing or updating Free Claude Code"
 install_free_claude_code

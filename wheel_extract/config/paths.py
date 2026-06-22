@@ -38,9 +38,11 @@ def default_claude_workspace_path() -> Path:
 
     return config_dir_path() / CLAUDE_WORKSPACE_DIRNAME
 
+
 def openrouter_keys_path() -> Path:
     """Return the OpenRouter keys file path."""
     return config_dir_path() / "openrouter_keys.txt"
+
 
 def server_log_path() -> Path:
     """Return the canonical server log path."""

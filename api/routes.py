@@ -5,7 +5,7 @@ from loguru import logger
 
 from config.settings import Settings
 from core.anthropic import get_token_count
-from core.trace import trace_event
+from core.trace import extract_claude_session_id_from_headers, trace_event
 from providers.registry import ProviderRegistry
 
 from . import dependencies
@@ -64,12 +64,16 @@ def get_proxy_service(
     settings: Settings = Depends(get_settings),
 ) -> ClaudeProxyService:
     """Build the request service for route handlers."""
+    session_id = extract_claude_session_id_from_headers(request.headers) or "unknown"
+    tracker = getattr(request.app.state, "token_tracker", None)
     return ClaudeProxyService(
         settings,
         provider_getter=lambda provider_type: dependencies.resolve_provider(
             provider_type, app=request.app, settings=settings
         ),
         token_counter=get_token_count,
+        token_tracker=tracker,
+        session_id=session_id,
     )
 
 

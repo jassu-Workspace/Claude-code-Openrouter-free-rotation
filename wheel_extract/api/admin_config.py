@@ -141,7 +141,7 @@ FIELDS: tuple[ConfigFieldSpec, ...] = (
         "string",
         settings_attr="open_router_api_keys_file",
         secret=False,
-        description="Path to a text file containing one OpenRouter API key per line (for automatic rotation). Takes precedence over OPENROUTER_API_KEY."
+        description="Path to a text file containing one OpenRouter API key per line (for automatic rotation). Takes precedence over OPENROUTER_API_KEY.",
     ),
     ConfigFieldSpec(
         "MISTRAL_API_KEY",

@@ -310,12 +310,25 @@ class AnthropicMessagesTransport(BaseProvider):
     ) -> httpx.Response:
         """Send request and raise mapped HTTP errors before yielding body chunks."""
         send_response = await self._send_stream_request(body)
-        if send_response.status_code != 200:
-            try:
-                await self._raise_for_status(send_response, req_tag=req_tag)
-            finally:
-                if not send_response.is_closed:
-                    await _maybe_await_aclose(send_response)
+        if send_response.status_code == 200:
+            content_type = send_response.headers.get("content-type", "")
+            if (
+                "text/event-stream" not in content_type
+                and "application/json" in content_type
+            ):
+                body_text = await send_response.aread()
+                send_response._content = body_text
+                raise httpx.HTTPStatusError(
+                    f"Expected SSE stream but got JSON response: {body_text[:200]!r}",
+                    request=send_response.request,
+                    response=send_response,
+                )
+            return send_response
+        try:
+            await self._raise_for_status(send_response, req_tag=req_tag)
+        finally:
+            if not send_response.is_closed:
+                await _maybe_await_aclose(send_response)
         return send_response
 
     def _emit_error_events(

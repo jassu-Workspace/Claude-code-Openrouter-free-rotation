@@ -351,6 +351,19 @@ function Install-FreeClaudeCode {
     Invoke-InstallCommand -FilePath "uv" -Arguments $toolArgs
 }
 
+function Test-SqliteSupport {
+    try {
+        $result = Invoke-ProbeCommand -FilePath "python" -Arguments @("-c", "import sqlite3; print(sqlite3.sqlite_version)")
+        if ($result.ExitCode -eq 0) {
+            Write-Host "  SQLite available: $($result.Output.Trim())"
+        } else {
+            Write-Host "  WARNING: sqlite3 module not found. Token tracking will not work."
+        }
+    } catch {
+        Write-Host "  WARNING: Could not verify SQLite support."
+    }
+}
+
 if ($Help) {
     Show-Usage
     return
@@ -373,6 +386,9 @@ Install-OrUpdateUv
 
 Write-Step "Installing Python $PythonVersion"
 Invoke-InstallCommand -FilePath "uv" -Arguments @("python", "install", $PythonVersion)
+
+Write-Step "Verifying SQLite support"
+Test-SqliteSupport
 
 Write-Step "Installing or updating Free Claude Code"
 Install-FreeClaudeCode

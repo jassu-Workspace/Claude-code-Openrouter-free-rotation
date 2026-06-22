@@ -29,6 +29,7 @@
 | **✓ Environment Diagnostics** | Comprehensive `fcc-doctor` tool to verify environment readiness. |
 | **✓ Auto Configuration** | Automated setup of local endpoints and provider routing. |
 | **✓ No Manual .env Editing** | Manage all environment variables and secrets through the web UI. |
+| **✓ Token Usage Tracking** | SQLite-backed per-session and per-model token tracking with daily aggregates. |
 | **✓ Cross Platform Support** | Fully optimized for Windows, macOS (Intel/M-series), and Linux. |
 
 ---
@@ -66,14 +67,15 @@
 Maximize your uptime and model access with our sophisticated rotation logic.
 
 ### How it Works
-- **Key Loading:** Keys are loaded from a managed `api_keys.txt` or through the dashboard.
-- **Round-Robin Rotation:** Requests are distributed across the key pool.
-- **Health Tracking:** Each key's health is monitored in real-time.
-- **Error Handling:**
-  - **401 Unauthorized:** Key is flagged and removed from rotation immediately.
-  - **402 Insufficient Balance:** Key is marked as "Exhausted" and skipped until manually reset.
-  - **429 Rate Limit:** Triggers an instant failover to the next available key without interrupting the user session.
-- **Automatic Failover:** On any provider-side failure, the engine automatically selects the next healthy key and retries the request transparently.
+- **Key Loading:** Keys are loaded from `api_keys.txt` or through the dashboard.
+- **3-State Health System:** Each key transitions through `healthy → cooldown → exhausted`.
+  - **429 Rate Limit:** Key enters cooldown (60s), auto-recovers after expiry.
+  - **402 Insufficient Balance:** Key enters cooldown, retries after expiry.
+  - **401 Unauthorized:** Key is rotated out immediately.
+  - **Malformed/Empty Response:** Treated as validation failure — key rotated, next key tried.
+- **Automatic Failover:** On any failure, engine picks next healthy key and retries transparently.
+- **Response Validation:** Every HTTP 200 response is checked — JSON bodies and non-SSE content are rejected as invalid (prevents Claude Code "malformed response" errors).
+- **All Keys Exhausted:** Raises clear error instead of silent hang.
 
 ---
 
@@ -186,16 +188,20 @@ A: They are marked as exhausted and skipped. You can reset them in the dashboard
 
 ## 🗺️ Roadmap
 
-### Current (v1.2.x)
-- [x] OpenRouter Round-Robin Rotation
+### Current (v1.4.0)
+- [x] OpenRouter Multi-Key Rotation with 3-state health system (healthy → cooldown → exhausted)
+- [x] Automatic key recovery after cooldown expiry (60s default)
+- [x] SSE response validation — detects and rejects malformed/empty HTTP 200 responses
+- [x] Graceful lifespan startup/shutdown with failure reporting (no more server hangs)
+- [x] SQLite-based token usage tracking per session and model
 - [x] Web Dashboard for Config & Monitoring
-- [x] Comprehensive CLI Diagnostics
-- [x] Failover for 429/402 Errors
+- [x] Comprehensive CLI Diagnostics (`fcc-doctor`)
+- [x] Failover for 401/402/429/empty-response errors
+- [x] Cross-platform install scripts with SQLite verification
 
-### Upcoming (v1.3.0+)
+### Upcoming (v1.5.0+)
 - [ ] **Multi-Provider Routing:** Native support for Groq, Gemini, and DeepSeek.
 - [ ] **Ollama/LM Studio Load Balancing:** Distribute local inference across multiple machines.
-- [ ] **Usage Analytics:** Detailed token tracking and cost estimation per key.
 - [ ] **Team Support:** Role-based access for shared key pools.
 
 ---

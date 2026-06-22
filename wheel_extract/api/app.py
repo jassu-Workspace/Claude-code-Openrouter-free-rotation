@@ -22,18 +22,52 @@ from providers.exceptions import ProviderError
 from .admin_routes import router as admin_router
 from .routes import router
 from .runtime import AppRuntime, startup_failure_message
+from .token_tracking import close as token_tracking_close
 from .validation_log import summarize_request_validation_body
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
+    from .token_tracking import get_summary
+
     runtime = AppRuntime.for_app(app, settings=get_settings())
     await runtime.startup()
 
+    app.state.token_tracker = _TokenTrackerImpl()
+    app.state.token_tracking_summary = get_summary()
+
     yield
 
+    token_tracking_close()
     await runtime.shutdown()
+
+
+class _TokenTrackerImpl:
+    """Lightweight tracker that delegates to token_tracking module."""
+
+    def track(
+        self,
+        session_id: str,
+        input_tokens: int,
+        output_tokens: int,
+        model: str,
+        request_id: str,
+    ) -> None:
+        from .token_tracking import track_event
+
+        track_event(
+            session_id=session_id,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            model=model,
+            request_id=request_id,
+        )
+
+    def deactivate(self, session_id: str) -> None:
+        from .token_tracking import deactivate_session
+
+        deactivate_session(session_id)
 
 
 class GracefulLifespanApp:
@@ -52,6 +86,9 @@ class GracefulLifespanApp:
         await self._lifespan(receive, send)
 
     async def _lifespan(self, receive: Receive, send: Send) -> None:
+        from .token_tracking import close as token_tracking_close
+        from .token_tracking import get_summary
+
         settings = get_settings()
         runtime = AppRuntime.for_app(self.app, settings=settings)
         startup_complete = False
@@ -60,6 +97,8 @@ class GracefulLifespanApp:
             if message["type"] == "lifespan.startup":
                 try:
                     await runtime.startup()
+                    self.app.state.token_tracker = _TokenTrackerImpl()
+                    self.app.state.token_tracking_summary = get_summary()
                 except Exception as exc:
                     await send(
                         {
@@ -75,6 +114,7 @@ class GracefulLifespanApp:
             if message["type"] == "lifespan.shutdown":
                 if startup_complete:
                     try:
+                        token_tracking_close()
                         await runtime.shutdown()
                     except Exception as exc:
                         logger.error("Shutdown failed: exc_type={}", type(exc).__name__)
@@ -113,8 +153,9 @@ def create_app(*, lifespan_enabled: bool = True) -> FastAPI:
     # Register routes
     app.include_router(admin_router)
     app.include_router(router)
-    
+
     from api.system import router as system_router
+
     app.include_router(system_router)
 
     # Exception handlers

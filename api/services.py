@@ -33,6 +33,22 @@ TokenCounter = Callable[[list[Any], str | list[Any] | None, list[Any] | None], i
 
 ProviderGetter = Callable[[str], BaseProvider]
 
+
+class TokenTracker:
+    """Callback interface for token usage tracking."""
+
+    def track(
+        self,
+        session_id: str,
+        input_tokens: int,
+        output_tokens: int,
+        model: str,
+        request_id: str,
+    ) -> None: ...
+
+    def deactivate(self, session_id: str) -> None: ...
+
+
 # Providers that use ``/chat/completions`` + Anthropic-to-OpenAI conversion (not native Messages).
 _OPENAI_CHAT_UPSTREAM_IDS = frozenset({"nvidia_nim", "opencode", "opencode_go"})
 
@@ -93,11 +109,15 @@ class ClaudeProxyService:
         provider_getter: ProviderGetter,
         model_router: ModelRouter | None = None,
         token_counter: TokenCounter = get_token_count,
+        token_tracker: TokenTracker | None = None,
+        session_id: str = "unknown",
     ):
         self._settings = settings
         self._provider_getter = provider_getter
         self._model_router = model_router or ModelRouter(settings)
         self._token_counter = token_counter
+        self._token_tracker = token_tracker
+        self._session_id = session_id
 
     def create_message(self, request_data: MessagesRequest) -> object:
         """Create a message response or streaming response."""
@@ -186,6 +206,15 @@ class ClaudeProxyService:
                     routed.request.system,
                     routed.request.tools,
                 )
+
+                if self._token_tracker is not None:
+                    self._token_tracker.track(
+                        session_id=self._session_id,
+                        input_tokens=input_tokens,
+                        output_tokens=0,
+                        model=routed.request.model,
+                        request_id=request_id,
+                    )
 
                 streamed = traced_async_stream(
                     provider.stream_response(

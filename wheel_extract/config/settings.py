@@ -79,7 +79,9 @@ class Settings(BaseSettings):
 
     # ==================== OpenRouter Config ====================
     open_router_api_key: str = Field(default="", validation_alias="OPENROUTER_API_KEY")
-    open_router_api_keys_file: str = Field(default="", validation_alias="OPENROUTER_API_KEYS_FILE")
+    open_router_api_keys_file: str = Field(
+        default="", validation_alias="OPENROUTER_API_KEYS_FILE"
+    )
 
     # ==================== Mistral La Plateforme ====================
     mistral_api_key: str = Field(default="", validation_alias="MISTRAL_API_KEY")
