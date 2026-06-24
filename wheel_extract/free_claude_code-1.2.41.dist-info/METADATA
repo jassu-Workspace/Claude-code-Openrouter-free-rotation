@@ -1,0 +1,151 @@
+Metadata-Version: 2.4
+Name: free-claude-code
+Version: 1.2.41
+Summary: Middleware between Claude Code CLI (Anthropic API) and NVIDIA NIM
+License-File: LICENSE
+Requires-Python: >=3.14.0
+Requires-Dist: aiohttp>=3.14.0
+Requires-Dist: discord-py>=2.7.1
+Requires-Dist: fastapi[standard]>=0.136.3
+Requires-Dist: httpx[socks]>=0.28.1
+Requires-Dist: jsonschema>=4.25.0
+Requires-Dist: loguru>=0.7.0
+Requires-Dist: markdown-it-py>=4.2.0
+Requires-Dist: openai>=2.41.0
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: pydantic-settings>=2.14.1
+Requires-Dist: pydantic>=2.13.4
+Requires-Dist: python-dotenv>=1.2.2
+Requires-Dist: python-telegram-bot>=22.7
+Requires-Dist: tiktoken>=0.13.0
+Requires-Dist: uvicorn>=0.49.0
+Provides-Extra: voice
+Requires-Dist: grpcio-tools>=1.81.0; extra == 'voice'
+Requires-Dist: grpcio>=1.81.0; extra == 'voice'
+Requires-Dist: nvidia-riva-client>=2.26.0; extra == 'voice'
+Provides-Extra: voice-local
+Requires-Dist: accelerate>=1.13.0; extra == 'voice-local'
+Requires-Dist: librosa>=0.10.0; extra == 'voice-local'
+Requires-Dist: torch>=2.12.0; extra == 'voice-local'
+Requires-Dist: transformers>=5.10.2; extra == 'voice-local'
+Description-Content-Type: text/markdown
+
+# FCC: OpenRouter Gateway
+
+**FCC: OpenRouter Gateway** is a standalone proxy and management product that seamlessly bridges the official [Claude Code CLI](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) with OpenRouter. 
+
+It provides an out-of-the-box, user-friendly experience with automatic API key rotation, a modern web dashboard, and simple one-command installation. Say goodbye to manual `.env` file editing and complex setup procedures!
+
+*Note: This project originated from [Alishahryar1/free-claude-code](https://github.com/Alishahryar1/free-claude-code) and has been transformed into a fully managed, easy-to-install product.*
+
+## 🚀 Features
+
+- **One Command Install**: Installs all required tools and dependencies automatically.
+- **One Command Start**: `fcc-start` handles launching the server, opening the dashboard, and starting Claude Code.
+- **OpenRouter Multi-Key Rotation**: Built-in support for rotating multiple OpenRouter API keys to handle rate limits and exhausted balances automatically.
+- **Modern Web Dashboard**: A beginner-friendly, clean UI to manage keys, monitor server health, and check provider status.
+- **Web-Based Setup**: No more editing `.env` files manually. Just paste your keys in the onboarding screen!
+- **Built-in Diagnostics**: Run `fcc-doctor` to instantly find and fix configuration issues.
+- **OpenRouter Manager**: Track how many keys are healthy, exhausted, or active in real-time.
+
+## 📦 Installation
+
+To get started, you just need Python installed. Then run our universal installation command:
+
+```bash
+uv tool install git+https://github.com/Alishahryar1/free-claude-code.git
+```
+*(If you don't use `uv`, you can install via pip: `pip install git+https://github.com/Alishahryar1/free-claude-code.git`)*
+
+Once installed, verify the installation by running:
+```bash
+fcc-install
+```
+
+## 🏁 First Run & Setup
+
+Starting the gateway is as simple as:
+
+```bash
+fcc-start
+```
+
+**What happens?**
+1. If you haven't configured OpenRouter keys yet, the server will start and automatically open the **Onboarding Dashboard** in your browser.
+2. Paste your OpenRouter API keys (one per line) and click **Apply Configuration**.
+3. Click **Start Claude Code**. FCC will spawn a new terminal for the server and launch Claude Code seamlessly!
+
+## 🔧 Configure OpenRouter
+
+1. Run `fcc-start`.
+2. Navigate to the **OpenRouter Manager** in the Dashboard (http://localhost:8082/admin).
+3. Paste your keys in the Manage Keys text area.
+4. Click **Save Keys**. The system will validate and deduplicate your keys. Your changes apply immediately with zero downtime.
+
+## 📊 Dashboard
+
+The FCC Dashboard is your control center.
+- **Dashboard**: High-level view of Server Status, loaded OpenRouter keys, and your active provider.
+- **OpenRouter Manager**: Monitor key rotation metrics (Total, Healthy, Exhausted, Active Index) and manage your API keys.
+- **Provider Status**: Check connectivity to local or remote AI providers.
+- **System Status**: View host, port, and system-level diagnostics.
+
+## 🔄 OpenRouter Rotation
+
+Our intelligent rotation system ensures your workflows are never interrupted:
+- **Healthy Keys**: Keys that are actively being used and returning successful responses.
+- **Exhausted Keys**: Keys that have run out of credits (HTTP 402). They are marked exhausted and skipped.
+- **Rotation Logic**: If a key hits a rate limit (HTTP 429), the system automatically rotates to the next healthy key and retries your prompt invisibly.
+
+## 💻 CLI Commands
+
+The gateway provides five core commands for complete control:
+
+- `fcc-install`: Verifies your environment (Python, uv, Git, Claude Code) and sets up required directories.
+- `fcc-start`: The main entry point. Checks configuration, starts the proxy server, and launches Claude Code.
+- `fcc-status`: Displays the current version, server status, and real-time OpenRouter rotation metrics.
+- `fcc-doctor`: Runs a full diagnostic check on your environment to find missing dependencies or broken configurations.
+- `fcc-update`: Pulls the latest version from the repository and safely reinstalls while preserving your configuration.
+
+## 🔄 Updating
+
+Updating is safe and preserves your keys and configuration:
+
+```bash
+fcc-update
+```
+
+## 🛠️ Troubleshooting
+
+- **Missing Claude Code**: If `fcc-doctor` reports Claude Code is missing, install it via `npm install -g @anthropic-ai/claude-code`.
+- **Port Conflicts**: Ensure port 8082 is free. If the server fails to start, check the logs or try restarting your terminal.
+- **Invalid Keys**: If Claude Code returns an authentication error, verify your keys in the OpenRouter Manager. Exhausted keys will be automatically skipped.
+- **Server Errors**: Run `fcc-status` to see if the server is healthy. If stopped, run `fcc-start` again.
+
+## 🏗️ Architecture
+
+```text
+User
+ ↓ (runs fcc-start)
+CLI
+ ↓ (checks keys, spawns server)
+FCC Server
+ ↓ (intercepts API requests)
+OpenRouter Manager
+ ↓ (rotates keys on 402/429)
+OpenRouter
+ ↓ (processes request)
+Claude Code (in current terminal)
+```
+
+## 📚 Migration Guide
+
+If you used older versions of `free-claude-code`, simply install this update. Your `.env` files will be preserved. However, the recommended way to manage OpenRouter keys is now through the web dashboard, which saves them directly to `~/.fcc/openrouter_keys.txt`. The proxy will automatically read from this new file!
+
+## 📜 Attribution & License
+
+This project originated from [Alishahryar1/free-claude-code](https://github.com/Alishahryar1/free-claude-code). 
+All original copyrights and licenses are preserved. 
+
+---
+*Built to make Claude Code accessible, affordable, and easy for everyone.*
