@@ -1,91 +1,183 @@
-# ♾️ Free Claude Code (FCC)
+<div align="center">
+  <img src="https://img.shields.io/badge/Claude--Code-Integration-7B61FF?style=for-the-badge&logo=anthropic" alt="Claude Code" />
+  <img src="https://img.shields.io/badge/OpenRouter-API-black?style=for-the-badge&logo=ai" alt="OpenRouter API" />
+  <img src="https://img.shields.io/badge/FastAPI-Framework-009688?style=for-the-badge&logo=fastapi" alt="FastAPI" />
+  
+  <h1>🚀 Free Claude Code (FCC)</h1>
+  <p><b>The Ultimate Local Gateway & OpenRouter Key Manager</b></p>
+  
+  <p>Superpower your <b>Claude Code CLI</b>, <b>Claude Desktop</b>, and <b>VS Code</b> with automatic multi-key rotation, zero-latency failover, and a premium web dashboard.</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.14-green.svg)](https://python.org)
+  <p>
+    <a href="https://github.com/jassu-Workspace/Claude-code-Openrouter-free-rotation/stargazers"><img src="https://img.shields.io/github/stars/jassu-Workspace/Claude-code-Openrouter-free-rotation?style=flat-square&color=yellow" alt="Stars" /></a>
+    <a href="https://github.com/jassu-Workspace/Claude-code-Openrouter-free-rotation/network/members"><img src="https://img.shields.io/github/forks/jassu-Workspace/Claude-code-Openrouter-free-rotation?style=flat-square&color=blue" alt="Forks" /></a>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License" /></a>
+  </p>
+</div>
 
-**Free Claude Code** is an advanced, high-performance local proxy engine that enables you to use the powerful official **Anthropic Claude Code CLI** (and various IDE extensions) for absolutely **free** by dynamically rotating OpenRouter keys and routing requests through custom endpoints. 
+<br/>
 
-Designed for developers who want zero interruptions, seamless proxying, and a stunning local admin dashboard to manage everything in real-time.
+> **Tired of hitting rate limits?** Ever been deep in the zone, only to be interrupted by a `429 Too Many Requests` or an empty API balance? **Free Claude Code (FCC)** is a smart, local proxy server that manages a pool of OpenRouter API keys. The millisecond one key fails, FCC silently rotates to the next one—meaning your coding sessions are never interrupted again.
 
 ---
 
-## ✨ Key Features
+## ✨ Stellar Features
 
-*   🔄 **Automatic Key Rotation:** Paste in an unlimited number of OpenRouter API keys. FCC will automatically cycle through them, instantly failing over when a key hits its rate limit or runs out of credits!
-*   🎛️ **Gorgeous Local Dashboard:** A premium, glassmorphism web UI available at `http://127.0.0.1:8082/admin` to manage your keys, test provider latency, and tweak runtime settings.
-*   🔌 **Zero-Config IDE Injection:** Native commands to instantly launch **VS Code** and the **Claude Desktop App** with all proxy environment variables injected automatically.
-*   🧠 **Multi-Provider Support:** Supports OpenRouter, local LM Studio, Ollama, llama.cpp, DeepSeek, and more!
-*   ⚡ **Lightning Fast:** Built in modern Python using FastAPI and Uvicorn.
+*   🔄 **Automatic Key Rotation:** Add an unlimited number of OpenRouter keys. The engine load-balances and instantly fails over when limits are hit!
+*   🎛️ **Gorgeous Local Dashboard:** A premium, glassmorphic Web UI (running at `localhost:8082/admin`) to effortlessly manage your keys, test provider latency, and tweak settings.
+*   🔌 **Zero-Config IDE Launchers:** Native terminal commands that instantly boot your server and launch your favorite tools with the proxy environment variables automatically injected.
+*   🧠 **Universal Provider Support:** Not just OpenRouter! Connect local models via LM Studio, Ollama, llama.cpp, DeepSeek, and more.
+*   ⚡ **Lightning Fast Architecture:** Built on modern Python (3.14) using FastAPI and Uvicorn for true async performance.
 
 ---
 
-## 🚀 Installation & Setup
+## 🚀 Step 1: Installation & Setup
 
-### Prerequisites
-1.  Ensure you have **Python 3.14** installed.
-2.  Install `uv` (the lightning-fast Python package manager) from Astral.
-    ```bash
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
+We recommend using `uv`, the insanely fast Python package manager, for the cleanest installation.
 
-### 1. Clone & Sync
+**1. Install UV (if you don't have it):**
 ```bash
-git clone https://github.com/YOUR_USERNAME/free-claude-code.git
-cd free-claude-code
+# Windows (PowerShell):
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# macOS / Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**2. Clone and Sync the Repository:**
+```bash
+git clone https://github.com/jassu-Workspace/Claude-code-Openrouter-free-rotation.git
+cd Claude-code-Openrouter-free-rotation
 uv sync
 ```
 
-### 2. Configure Your Keys (The Easy Way)
-Start the server and open the web dashboard:
+---
+
+## ⚙️ Step 2: Configure Your Keys via the Dashboard
+
+Forget messing with `.env` files. FCC comes with a breathtaking local web dashboard!
+
+1. **Start the engine:**
+   ```bash
+   uv run fcc-server
+   ```
+2. **Open your browser** and go to: **[http://127.0.0.1:8082/admin](http://127.0.0.1:8082/admin)**
+3. In the sidebar, click on **Providers**.
+4. Scroll down to the **OpenRouter API Key(s)** input box.
+5. **Paste your keys!** You can paste as many as you want, exactly **one key per line**. 
+6. Click the **Save** button. The engine is now armed and ready.
+
+---
+
+## 🎯 Step 3: Connect Your Favorite Apps
+
+FCC acts as a drop-in replacement for the Anthropic API. Here are the exact, step-by-step instructions to connect it to your favorite tools:
+
+### 📱 A. Integrating with Claude Desktop (The Official App)
+
+You can connect the official Anthropic Claude Desktop app to your local FCC proxy. 
+
+**Method 1: The Automated Launcher (Recommended)**
+Simply open your terminal inside the project folder and run:
 ```bash
-uv run fcc-server
+uv run fcc-desktop
 ```
-Navigate to **`http://127.0.0.1:8082/admin`** in your browser.
-Under the **Providers** section, look for the OpenRouter API Key box. You can paste your keys directly into the UI, **one per line**. The engine handles the rest!
+*This command verifies your server is running, locates your Windows App installation of Claude, and injects the proxy settings perfectly.*
 
----
+**Method 2: Manual Configuration in Claude Desktop**
+If you prefer to configure it manually inside the app:
+1. Open the Claude Desktop application.
+2. At the top left, click **File** -> **Settings** (or press `Ctrl + ,`).
+3. On the left sidebar of the settings menu, look for the **Developer** tab. 
+   *(Note: If you don't see the Developer tab, you may need to click on "Appearance" or "Account" and type the Konami code or check Anthropic's docs for enabling developer mode, but usually, it is visible in the latest builds).*
+4. In the Developer section, enable **Custom Gateway**.
+5. Set the **Gateway Base URL** to exactly: `http://127.0.0.1:8082`
+6. Set the **Gateway API key** to: `freecc` *(This is FCC's internal auth token).*
+7. **Crucial Step:** Toggle **OFF** "Model Discovery".
+8. Manually type the model you want to use (e.g., `anthropic/claude-3.5-sonnet:beta`).
 
-## 🛠️ Commands Reference
+### 💻 B. Integrating with VS Code (Cline / Roo / Claude Code)
 
-Free Claude Code comes with a suite of built-in commands to fit your exact workflow. Run these directly from your terminal:
+Visual Studio Code extensions that use Anthropic's API can easily be rerouted through FCC.
 
-### `uv run fcc-server`
-Starts the standalone background proxy server and the local Admin Web UI on port `8082`. Leave this running in a background terminal.
-
-### `uv run fcc-claude`
-The primary wrapper for the Claude Code CLI. 
-*   It automatically detects if your `fcc-server` is running. If it isn't, it seamlessly boots it up in the background.
-*   It then instantly drops you into the official Claude Code CLI terminal experience, fully proxied and ready to code!
-
-### `uv run fcc-ide`
-For the visual coders! 
-*   Detects if you have **VS Code** installed.
-*   Starts the local server.
-*   Launches VS Code and injects the required Anthropic Base URL and API keys so your local extensions (like *Cline* or the official *Claude Code* extension) instantly connect to the proxy without manual configuration!
-
-### `uv run fcc-desktop`
-Want to use the official Anthropic Claude GUI App?
-*   Detects your official Windows Store installation of the Claude Desktop app.
-*   Starts the server and automatically pops open the app, fully linked to your proxy!
-
----
-
-## 💡 Troubleshooting VS Code Extensions
-
-If you are using the official **Anthropic Claude Code** extension inside VS Code, it features a hardcoded login screen. To bypass it and connect to your local proxy:
-
-1. Open your VS Code `settings.json`
-2. Add these lines:
-```json
-"claudeCode.disableLoginPrompt": true,
-"claudeCode.env": [
-    { "name": "ANTHROPIC_BASE_URL", "value": "http://127.0.0.1:8082" },
-    { "name": "ANTHROPIC_API_KEY", "value": "freecc" }
-]
+**Method 1: The Automated Launcher (Recommended)**
+```bash
+uv run fcc-ide
 ```
-3. Restart VS Code!
+*This command starts FCC and launches VS Code with `ANTHROPIC_BASE_URL` and `ANTHROPIC_API_KEY` injected straight into the process.*
 
-*(Alternatively, use the **Cline** extension from the marketplace, which allows you to set the Custom Base URL to `http://127.0.0.1:8082` directly in its UI settings!)*
+**Method 2: Manual Configuration for "Cline" or "Roo Code" extensions**
+1. Open your VS Code and open the **Cline** or **Roo** extension sidebar.
+2. Click the **Settings** (Gear icon) for the extension.
+3. Under **API Provider**, select **Anthropic** (or OpenAI Compatible).
+4. Look for the **Custom Base URL** input box.
+5. Enter: `http://127.0.0.1:8082`
+6. In the **API Key** input box, enter: `freecc`
+7. Click Save. You are now proxying through OpenRouter!
+
+**Method 3: Bypassing the official Anthropic Claude Code Extension Login**
+If you use Anthropic's official VS Code extension, it has a hardcoded login screen. To bypass it:
+1. Open VS Code.
+2. Press `Ctrl + Shift + P` and type `Open User Settings (JSON)`.
+3. Add the following lines to your `settings.json`:
+   ```json
+   "claudeCode.disableLoginPrompt": true,
+   "claudeCode.env": [
+       { "name": "ANTHROPIC_BASE_URL", "value": "http://127.0.0.1:8082" },
+       { "name": "ANTHROPIC_API_KEY", "value": "freecc" }
+   ]
+   ```
+4. Restart VS Code!
+
+### 🧑‍💻 C. Integrating with the Claude Code CLI Terminal
+
+Want to use Anthropic's official terminal tool? It's easier than ever.
+Just run:
+```bash
+uv run fcc-claude
+```
+*This automatically boots the proxy in the background and drops you into the official Claude Code CLI terminal experience, fully proxied and ready to code!*
 
 ---
-Made with ❤️ for the open-source coding community!
+
+## 🛠️ The Ultimate Command Reference
+
+We've bundled incredibly smart terminal commands to make your workflow absolutely frictionless. Run these using `uv run <command>`:
+
+| Command | What it does |
+| :--- | :--- |
+| `fcc-server` | Starts the standalone background proxy server and the local Admin Web UI on port `8082`. |
+| `fcc-desktop` | Checks your server, starts it silently if needed, and launches the **Claude Desktop App** perfectly synced with your proxy. |
+| `fcc-ide` | Auto-detects **VS Code** (or Cursor/Windsurf). Starts your proxy, injects the credentials, and opens your IDE. |
+| `fcc-claude` | Starts the server and launches the **Claude Code CLI** terminal client. |
+| `fcc-doctor` | Runs deep diagnostics to ensure your networking, proxy, and extensions are working flawlessly. |
+| `fcc-status` | Prints live health metrics, uptime, and active keys to the terminal. |
+
+<br/>
+
+<details>
+<summary><b>🤔 How does the architecture actually work? (Click to expand)</b></summary>
+<br/>
+
+When your application (like VS Code or Claude Desktop) sends an AI prompt, it hits our local FastAPI Proxy (`127.0.0.1:8082`) instead of Anthropic's servers.
+
+1. Our Proxy checks the `KeyManager` and grabs the next available OpenRouter key from the pool you pasted into the dashboard.
+2. It forwards your exact prompt to OpenRouter.
+3. If OpenRouter returns a `429 Rate Limit` or `402 Insufficient Balance`, our Proxy traps that error instantly.
+4. It throws away the dead key, grabs a fresh one, and tries again under the hood—meaning your Claude app never disconnects or fails!
+
+</details>
+
+---
+
+## 🤝 Open Source & Contributions
+
+This project is built for the community!
+- We have integrated GitHub Actions for seamless Continuous Integration (`tests.yml`) ensuring code quality.
+- Continuous Deployment (`release.yml`) automatically builds and publishes releases.
+
+Fork it, star it, and make it viral! Contributions are always welcome. Just open a Pull Request!
+
+<div align="center">
+  <p>Built with ❤️ by the open-source AI community.</p>
+</div>
